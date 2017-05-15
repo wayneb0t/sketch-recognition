@@ -1,5 +1,5 @@
 *.sw*
 *.pyc
 .env/
-data/png/
+data/png*/
 .ipynb_checkpoints/
