@@ -4,46 +4,65 @@ import PIL
 from PIL import Image
 from scipy.misc import imread, imresize, toimage
 
-def get_data(num_classes=250, per_class=80, res=128):
+def get_data(num_classes=250, res=128):
     """
-    Args:
-        per_class: the number of images to read from each class
-        res: the resolution of the output arrays (N x res x res)
-        thresh: thresholding for the image
+    Generates the datasets with 64 training examples, 8 validation examples,
+    and 8 testing examples per class.
     
+    Args:
+        num_classes: the number of classes to load (for smaller datasets)
+        res: the resolution of the output arrays (N x res x res)
     """
     root_dir = "data/png{}/".format("" if res is None else res)
     
-    per_class = min(80, per_class)
+    num_train = 64
+    num_val = 8
+    num_test = 8
     
     labels = []
     
-    X = np.zeros((num_classes * per_class, res, res, 1), dtype=np.float32)
-    y = np.repeat(np.arange(num_classes), per_class)
+    X_train = np.zeros((num_classes * num_train, res, res, 1), dtype=np.float32)
+    y_train = np.repeat(np.arange(num_classes), num_train)
     
-    index = 0
+    X_val = np.zeros((num_classes * num_val, res, res, 1), dtype=np.float32)
+    y_val = np.repeat(np.arange(num_classes), num_val)
+    
+    X_test = np.zeros((num_classes * num_test, res, res, 1), dtype=np.float32)
+    y_test = np.repeat(np.arange(num_classes), num_test)
+    
     classes = 0
+    train_index = 0
+    val_index = 0
+    test_index = 0
+    
     for node in sorted(os.listdir(root_dir)):
         if os.path.isfile(root_dir + node):
             continue
         
         labels.append(node)
         label_path = root_dir + node + "/"
+        
         num_images = 0
         for im_file in os.listdir(label_path):
             im_data = load_image(label_path + im_file)
-            X[index] = im_data.reshape(res, res, 1)
-            index += 1
-            num_images += 1
             
-            if num_images == per_class:
-                break
+            if num_images < num_train:
+                X_train[train_index] = im_data.reshape(res, res, 1)
+                train_index += 1
+            elif num_images < num_train + num_val:
+                X_val[val_index] = im_data.reshape(res, res, 1)
+                val_index += 1
+            else:
+                X_test[test_index] = im_data.reshape(res, res, 1)
+                test_index += 1
+                
+            num_images += 1
                 
         classes += 1
         if classes == num_classes:
             break
 
-    return X, y, labels
+    return X_train, y_train, X_val, y_val, X_test, y_test, labels
 
 def load_image(path):
     im_data = imread(path, mode='L')
