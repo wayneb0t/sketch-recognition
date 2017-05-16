@@ -53,23 +53,25 @@ Stanford University\\
 \section{Introduction}
 Sketching is one of the primary methods people use to communicate visual information. Since the era of primitive cave paintings, humans have used simple illustrations to represent real-world objects and concepts. Sketches are often abstract and stylized, varying based on artistic ability and style. In addition, sketches emphasize defining characteristics of real-world objects and ignore features which are either less important or more difficult to draw. For example, texture is almost never rendered unless it is important for recognition, such as the spikes on a hedgehog. In this way, sketches can be interpreted as a distillation of human visual recognition schemas.
 
-The sketch recognition problem differs from traditional photographic image classification. First, sketches are less visually complex than photographs. Where color photographs have three color channels per pixel, sketches are encoded as either black-and-white or grayscale. Photographs contain visual information throughout the image whereas sketches consist primarily of blank space. Second, sketches and photographs have different sources of intraclass variation. Where photographic image classification faces obstacles such as camera angle, occlusion, and illumination, photographs are still grounded in reality. On the other hand, sketches differ based on artistic style, which is unique to every artist. While people can agree on what an object looks like, how they ultimately render the object can vary significantly.
+The sketch recognition problem differs from traditional photographic image classification. First, sketches are less visually complex than photographs. Whereas color photographs have three color channels per pixel, sketches are encoded as either black-and-white or grayscale. Photographs contain visual information throughout the image whereas sketches consist primarily of blank space. Second, sketches and photographs have different sources of intraclass variation. Whereas photographic image classification faces obstacles such as camera angle, occlusion, and illumination, photographs are still grounded in reality. On the other hand, sketches differ based on artistic style, which is unique to every artist. While people can agree on what an object looks like, how they ultimately render the object can vary significantly.
 
 In this paper, we explore various convolutional neural network architectures for sketch recognition, including classic models like AlexNet and more recent deep architectures such as ResNet.
 
-\section{Background/Related Work}
-Since SketchPad [cite], different computer vision approaches have been used to achieve better results in multiple application areas. Eitz et al. [1] used local feature vectors, bag of features sketch representation and SVMs to classify sketches. Schneider et al. [3] then modified the benchmark proposed by Eitz et al [1] by making it more focused on how the image should like, rather than the original drawing intention, and they also used SIFT, GMM based on Fisher vector encoding, and SVMs to achieve sketch recognition. 
--something about convnets- 
--imagenet paper with hinton
--will look 
+\section{Related Work}
+Since SketchPad [6], sketch recognition has introduced sketching as a means of human computer interaction. Computer vision has since tried different approaches to achieve better results in multiple application areas. Eitz et al. [1] were able to demonstrate classification rates can be achieved for computational sketch recognition by using local feature vectors, bag of features sketch representation and SVMs to classify sketches. Schneider et al. [3] then modified the benchmark proposed by Eitz et al [1] by making it more focused on how the image should like, rather than the original drawing intention, and they also used SIFT, GMM based on Fisher vector encoding, and SVMs to achieve sketch recognition. 
+
+
+
 
 %-------------------------------------------------------------------------
 \section{Dataset}
-Eitz et al. [1] defined a taxonomy of 250 object categories gathered from 20,000 human sketches (TU-Berlin sketch benchmark). The dataset has a total of 250 classes, and it is split into three categories: exhaustive, recognizable, and specific. Images are available as 1111x1111px PNG files, which we have resized to 128x128px grayscale images.
+Eitz et al. [1] defined a taxonomy of 250 object categories gathered from 20,000 human sketches (TU-Berlin sketch benchmark). The dataset has a total of 250 classes, and it is split into three categories: exhaustive, recognizable, and specific. Images are available as 1111x1111 px PNG files, which we have resized to 128x128 px grayscale images.
+
+
 \begin{figure}
 	\begin{center}
 	\includegraphics[width=0.5\linewidth]{airplane}
-	\caption{Example image from TU Berlin dataset.}
+	\caption{Example sketch from TU Berlin dataset.}
 	\end{center}
 \end{figure}
 
@@ -100,16 +102,8 @@ ConvoNet [6] & 77.69\\
 
 %-------------------------------------------------------------------------
 \section{Experiments}
--single CNN 
--CNN finetune 
-
-
-Please use footnotes\footnote {This is what a footnote looks like.  It
-often distracts the reader from the main flow of the argument.} sparingly.
-Indeed, try to avoid footnotes altogether and include necessary peripheral
-observations in the text (within parentheses, if you prefer, as in this sentence).  If you
-wish to use a footnote, place it at the bottom of the column on the page on
-which it is referenced. Use Times 8-point type, single-spaced.
+The first model that we train is a single sketch CNN. We would pass an individual sketch through the CNN. 
+ 
 
 
 %-------------------------------------------------------------------------
@@ -131,20 +125,7 @@ which it is referenced. Use Times 8-point type, single-spaced.
 [8] Yesilbek, K. T., Sen, C., Cakmak, S., et al. SVM-based sketch recognition: which hyperparameter interval to try?. In : Proceedings of the workshop on Sketch-Based Interfaces and Modeling. Eurographics Association, 2015. p. 117-121
 
 
-\begin{table}
-\begin{center}
-\begin{tabular}{|l|c|}
-\hline
-Method & Frobnability \\
-\hline\hline
-Theirs & Frumpy \\
-Yours & Frobbly \\
-Ours & Makes one's heart Frob\\
-\hline
-\end{tabular}
-\end{center}
-\caption{Results.   Ours is better.}
-\end{table}
+
 
 {\small
 \bibliographystyle{ieee}
