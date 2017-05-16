@@ -46,7 +46,11 @@ Stanford University\\
 
 %%%%%%%%% ABSTRACT
 \begin{abstract}
+<<<<<<< HEAD
  Automatic recognition of sketches differs from other areas of image classification because sketches of the same object can vary based on artistic style and drawing ability. In addition, sketches are less detailed and thus harder to distinguish than photographs. Using a publicly available dataset of 20,000 sketches across 250 classes from Eitz et al. [1], we are applying ConvNets in order to improve performance over traditional multi-class support vector classifiers (SVMs) using by experimenting with different architecture methods, such as quadrant pooling and fine tuning, and hyperparameters to asses the overall performance of our proposed model. 
+=======
+ Automatic recognition of sketches differs from other areas of image classification because sketches of the same object can vary based on artistic style and drawing ability. In addition, sketches are less detailed and thus harder to distinguish than photographs. Using a publicly available dataset of 20,000 sketches across 250 classes from Eitz et al. ~\cite{eitz2012hdhso}, we are applying ConvNets in order to improve performance over traditional multi-class support vector classifiers (SVMs) using by experimenting with different architecture methods, such as quadrant pooling and fine tuning, and hyperparameters to asses the overall performance of our proposed model. 
+>>>>>>> 82a4186e12dde79f5a6bf94cb27206c357b5c4cb
 \end{abstract}
 
 %%%%%%%%% BODY TEXT
@@ -55,22 +59,25 @@ Sketching is one of the primary methods people use to communicate visual informa
 
 The sketch recognition problem differs from traditional photographic image classification. First, sketches are less visually complex than photographs. Whereas color photographs have three color channels per pixel, sketches are encoded as either black-and-white or grayscale. Photographs contain visual information throughout the image whereas sketches consist primarily of blank space. Second, sketches and photographs have different sources of intraclass variation. Whereas photographic image classification faces obstacles such as camera angle, occlusion, and illumination, photographs are still grounded in reality. On the other hand, sketches differ based on artistic style, which is unique to every artist. While people can agree on what an object looks like, how they ultimately render the object can vary significantly.
 
-In this paper, we explore various convolutional neural network architectures for sketch recognition, including classic models like AlexNet [2] and more recent deep architectures such as ResNet.
+In this paper, we explore the use of deep convolutional neural network architectures for sketch recognition.
 
 \section{Related Work}
+<<<<<<< HEAD
 Since SketchPad [6], sketch recognition has introduced sketching as a means of human computer interaction. Computer vision has since tried different approaches to achieve better results in multiple application areas. Eitz et al. [1] were able to demonstrate classification rates can be achieved for computational sketch recognition by using local feature vectors, bag of features sketch representation and SVMs to classify sketches. Schneider et al. [3] then modified the benchmark proposed by Eitz et al [1] by making it more focused on how the image should like, rather than the original drawing intention, and they also used SIFT, GMM based on Fisher vector encoding, and SVMs to achieve sketch recognition.
 
 Currently, existing convolutional neural networks (CNNs) are designed for photos, and they are trained on a large amount of data to avoid overfitting.  Sketches require a special model archietures.  
+=======
+Since SketchPad ~\cite{sutherland1964sketchpad}, sketch recognition has introduced sketching as a means of human computer interaction. Computer vision has since tried different approaches to achieve better results in multiple application areas. Eitz et al. ~\cite{eitz2012hdhso} were able to demonstrate classification rates can be achieved for computational sketch recognition by using local feature vectors, bag of features sketch representation and SVMs to classify sketches. Schneider et al. ~\cite{schneider2014sketch} then modified the benchmark proposed by Eitz et al ~\cite{eitz2012hdhso} by making it more focused on how the image should like, rather than the original drawing intention, and they also used SIFT, GMM based on Fisher vector encoding, and SVMs to achieve sketch recognition. 
+>>>>>>> 82a4186e12dde79f5a6bf94cb27206c357b5c4cb
 
 
 
 
 %-------------------------------------------------------------------------
 \section{Dataset}
-Eitz et al. [1] defined a taxonomy of 250 object categories gathered from 20,000 human sketches (TU-Berlin sketch benchmark). The dataset has a total of 250 classes, and it is split into three categories: exhaustive, recognizable, and specific. Images are available as 1111x1111 px PNG files, which we have resized to 128x128 px grayscale images.
+Eitz et al. ~\cite{eitz2012hdhso} defined a taxonomy of 250 object categories gathered from 20,000 human sketches (TU-Berlin sketch benchmark). The dataset has a total of 250 classes, and it is split into three categories: exhaustive, recognizable, and specific. Images are available as 1111x1111 px PNG files, which we have resized to 128x128 px grayscale images.
 
-
-\begin{figure}
+\begin{figure}[h]
 	\begin{center}
 	\includegraphics[width=0.5\linewidth]{airplane}
 	\caption{Example sketch from TU Berlin dataset.}
@@ -79,26 +86,27 @@ Eitz et al. [1] defined a taxonomy of 250 object categories gathered from 20,000
 
 
 %-------------------------------------------------------------------------
-\section{Our Approach}
+\section{Approach}
+We first preprocess the dataset to produce 128x128 px images. The original images are rescaled from 1111x1111px to 128x128px via bilinear interpolation. The resized images are then read into memory as grayscale 128x128 arrays.
 
-Our approach is based on the use of partial sketches of the TU-Berlin sketch benchmark. Instead of the original sizes of the images, of TU-Berlin sketch benchmark 256 x 256,  we resized our images to 128 x 128.  
+Our approach follows a fairly standard image classification pipeline. Image arrays are fed into a convolution neural network with the final output being fed to a 250-unit fully connected layer to generate logits for each class. We then apply a softmax loss function to the logits and optimize the loss using the Adam algorithm.
 
+At the moment, we are still experimenting with ConvNet architectures. We have been exploring novel architectures from scratch using convolutional, batch normalization, and pooling layers, but as of this writing, nothing has been very successful. Due to time constraints, we will change our approach after this milestone to using existing architectures such as AlexNet or ResNet as starting points to explore from. We will likely also employ the method of image distortion used by Seddati et al. ~\cite{seddati2015deepsketch} to improve generalization.
 
-
-\begin{table}
+\begin{table}[h]
 \begin{center}
 \begin{tabular}{|l|c|}
 \hline
 Method & mAP \\
 \hline\hline
-SIFT-varient + BoF + SVM  [1]  &  56 \\
-IDM + SVM [8] & 71.30 \\
-ConvoNet [4]  & 75.42\\
-ConvoNet [6] & 77.69\\
+SIFT-varient + BoF + SVM  ~\cite{eitz2012hdhso}  &  56 \\
+IDM + SVM ~\cite{yesilbek2015svm} & 71.30 \\
+ConvoNet ~\cite{seddati2015deepsketch}  & 75.42\\
+ConvoNet ~\cite{seddati2016deepsketch} & 77.69\\
 \hline
 \end{tabular}
 \end{center}
-\caption{Performance compairision of our models versus other methods.}
+\caption{Performance comparison of our models versus other methods.}
 \end{table}
 
 
@@ -109,29 +117,9 @@ The first model that we train is a single sketch CNN. We would pass an individua
 In order to improve our network, we are going to try different parameters such as CNN with different levels of regularization, CNN with dropout, CNN with data augmentation, and CNN with dropout and data augmentation. 
 
 %-------------------------------------------------------------------------
-\section{References}
- [1] Eitz, Mathias, HAYS, James, Alexa,  "Marc. How do humans sketch objects?", ACM Trans. Graph., vol. 31, no. 4, pp. 44, 2012.
-
- [2] Krizhevsky, Alex, Sutskever, Ilya, Hinton, E. Geoffrey, "Imagenet classification with deep convolutional neural networks", Advances in neural information processing systems, pp. 1097-1105, 2012.
-
-[3] Schneider, G. Rosália, Tuytellaars, Tinne, "Sketch Classification and Classification-driven Analysis using Fisher Vectors", ACM Transactions on Graphics (TOG), vol. 33, no. 6, pp. 174, 2014.
-
-[4] Seddati, Omar, Dupont, Stephane, et Mahmoudi, Said. Deepsketch: deep convolutional neural networks for sketch recognition and similarity search. In : Content-Based Multimedia Indexing (CBMI), 2015 13th International Workshop on. IEEE, 2015. p. 1-6.
-
-[5] Seddati, O., Dupont, S., \& Mahmoudi, S. (2016, June). DeepSketch 2: Deep convolutional neural networks for partial sketch recognition. In Content-Based Multimedia Indexing (CBMI), 2016 14th International Workshop on (pp. 1-6). IEEE.
-
-[6] Sutherland, E. Ivan, "Sketch pad a man-machine graphical communication system", Proceedings of the SHARE design automation workshop. ACM, pp. 6.329-6.346, 1964.
-
-[7] Szegedy, Christian, LIU, Wei, JIA, Yangqing et al., "Going deeper with convolutions. arXiv preprint arXiv: 1409.4842", 2014.
-
-[8] Yesilbek, K. T., Sen, C., Cakmak, S., et al. SVM-based sketch recognition: which hyperparameter interval to try?. In : Proceedings of the workshop on Sketch-Based Interfaces and Modeling. Eurographics Association, 2015. p. 117-121
-
-
-
-
 {\small
 \bibliographystyle{ieee}
-\bibliography{egbib}
+\bibliography{milestone}
 }
 
 \end{document}
