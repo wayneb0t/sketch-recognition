@@ -51,9 +51,11 @@ Stanford University\\
 
 %%%%%%%%% BODY TEXT
 \section{Introduction}
+Sketching is one of the primary methods people use to communicate visual information. Since the era of primitive cave paintings, humans have used simple illustrations to represent real-world objects and concepts. Sketches are often abstract and stylized, varying based on artistic ability and style. In addition, sketches emphasize defining characteristics of real-world objects and ignore features which are either less important or more difficult to draw. For example, texture is almost never rendered unless it is important for recognition, such as the spikes on a hedgehog. In this way, sketches can be interpreted as a distillation of human visual recognition schemas.
 
-Sketch recognition -- importance 
--uses 
+The sketch recognition problem differs from traditional photographic image classification. First, sketches are less visually complex than photographs. Where color photographs have three color channels per pixel, sketches are encoded as either black-and-white or grayscale. Photographs contain visual information throughout the image whereas sketches consist primarily of blank space. Second, sketches and photographs have different sources of intraclass variation. Where photographic image classification faces obstacles such as camera angle, occlusion, and illumination, photographs are still grounded in reality. On the other hand, sketches differ based on artistic style, which is unique to every artist. While people can agree on what an object looks like, how they ultimately render the object can vary significantly.
+
+In this paper, we explore various convolutional neural network architectures for sketch recognition, including classic models like AlexNet and more recent deep architectures such as ResNet.
 
 \section{Background/Related Work}
 Since SketchPad [cite], different computer vision approaches have been used to achieve better results in multiple application areas. Eitz et al. [1] used local feature vectors, bag of features sketch representation and SVMs to classify sketches. Schneider et al. [3] then modified the benchmark proposed by Eitz et al [1] by making it more focused on how the image should like, rather than the original drawing intention, and they also used SIFT, GMM based on Fisher vector encoding, and SVMs to achieve sketch recognition. 
