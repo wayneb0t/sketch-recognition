@@ -4,6 +4,7 @@ import PIL
 from PIL import Image
 from scipy.misc import imread, imresize, toimage
 
+
 def get_data(num_classes=250, res=128):
     """
     Generates the datasets with 64 training examples, 8 validation examples,
@@ -72,7 +73,7 @@ def resize_images(res=128):
     root_dir = "data/png/"
     new_dir = "data/png{}/".format(res)
     try:
-        os.mkdir(new_dir, 0755)
+        os.mkdir(new_dir, 755)
     except:
         pass
     
@@ -80,13 +81,13 @@ def resize_images(res=128):
         if os.path.isfile(root_dir + node):
             continue
             
-        print "Resizing {}".format(node)
+        print ("Resizing {}".format(node))
         
         label_path = root_dir + node + "/"
         new_path = new_dir + node + "/"
         
         try:
-            os.mkdir(new_path, 0755)
+            os.mkdir(new_path, 755)
         except:
             pass
         
