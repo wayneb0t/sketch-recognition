@@ -3,3 +3,6 @@
 .env/
 data/png*/
 .ipynb_checkpoints/
+*.aux
+*.log
+*.synctex*
