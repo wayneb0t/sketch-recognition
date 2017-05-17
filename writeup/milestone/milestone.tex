@@ -91,25 +91,45 @@ At the moment, we are still experimenting with ConvNet architectures. We have be
 \begin{center}
 \begin{tabular}{|l|c|}
 \hline
-Method & mAP \\
+Method & \% \\
 \hline\hline
 SIFT-varient + BoF + SVM  ~\cite{eitz2012hdhso}  &  56 \\
 IDM + SVM ~\cite{yesilbek2015svm} & 71.30 \\
 ConvNet ~\cite{seddati2015deepsketch}  & 75.42\\
 ConvNet ~\cite{seddati2016deepsketch} & 77.69\\
-ConvNet --Ours & 0.004 \\
+ConvNet --Ours & 0.4 \\
 \hline
 \end{tabular}
 \end{center}
-\caption{Performance comparison of our models versus other methods.}
+\caption{Test accuracy comparison of our models versus other methods.}
 \end{table}
 
 
 %-------------------------------------------------------------------------
 \section{Experiments}
-The first model that we train is a single sketch CNN. We would pass an individual sketch through the CNN. The CNN has 3 convolutional layers consisting of 128 x 128, 64 x 64, and 32 x 32 filters respectively. Each convolutional layer is followed by a batch normalization, ReLU (Rectified Linear Unit) activation function, and a 2 x 2 max pooling. After the convolutional layer is a fully-connected layer, we use cross  entropy as a cost function. With this model, we were able to achieve a test accuracy of 0.004. 
+Our current model consists of three convolution-batch normalization-ReLU-max pooling layers, followed by a fully connected layer to output logits. Loss is computed as softmax cross entropy. With this model, we were able to achieve a test accuracy of 0.004, which is the same as random guessing, so there is still work to be done.
 
-In order to improve our network, we are going to try different parameters such as CNN with different levels of regularization, CNN with dropout, CNN with data augmentation, and CNN with dropout and data augmentation. 
+\begin{figure}[h]
+\begin{center}
+\begin{tabular}{l | l | l}
+Layer & Output Size & Feature Depth \\ \hline \hline
+Conv-7 & 128x128 & 32 \\
+BN & 128x128 & 32 \\
+ReLU & 128x128 & 32 \\
+MaxPool-2, /2 & 64x64 & 32 \\ 
+Conv-5 & 64x64 & 64 \\
+BN & 64x64 & 64 \\
+ReLU & 64x64 & 64 \\
+MaxPool-2, /2 & 32x32 & 64 \\ 
+Conv-3 & 32x32 & 128 \\
+BN & 32x32 & 128 \\
+ReLU & 32x32 & 128 \\
+MaxPool-2, /2 & 16x16 & 128 \\
+FC & 250 &
+\end{tabular}
+\caption{ConvNet architecture. The "-$f$" notation refers to a layer with a $f$x$f$ filter. The "/$s$" notation refers to a layer with stride $s$.}
+\end{center}
+\end{figure}
 
 %-------------------------------------------------------------------------
 {\small
