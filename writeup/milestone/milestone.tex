@@ -61,12 +61,15 @@ In this paper, we explore the use of deep convolutional neural networks (DCNN) a
 
 Since SketchPad ~\cite{sutherland1964sketchpad}, sketch recognition has introduced sketching as a means of human computer interaction. Computer vision has since tried different approaches to achieve better results in multiple application areas. Eitz et al. ~\cite{eitz2012hdhso} was able to demonstrate classification rates can be achieved for computational sketch recognition by using local feature vectors, bag of features sketch representation and SVMs to classify sketches. Schneider et al.~\cite{schneider2014sketch} then modified the benchmark proposed by Eitz et al ~\cite{eitz2012hdhso}  by making it more focused on how the image should like, rather than the original drawing intention, and they also used SIFT, GMM based on Fisher vector encoding, and SVMs to achieve sketch recognition.
 
-Convolutional neural networks (CNNs) have emerged as a powerful framework for feature representation and recognition ~\cite{krizhevsky2012imagenet|}. However, current existing CNNs are designed for photos, and they are trained on a large amount of data to avoid overfitting.  Sketches, on the other hand, require special model architectures. In Yu et al. ~\cite{yuqian2016sketchnet}, they proposed Sketch-a-Net, a different type of CNN that is customizable towards sketches. While Sarvadevabhatla et al. ~\cite{sarvadevabhatla2015freehand} used two popular ConvNets (ImageNet and a modified LeNet) to fine-tuned their parameters on the TU-Berlin sketch dataset in order to extract deep features from CNNs to recognize hand-drawn sketches. 
+Convolutional neural networks (CNN) have emerged as a powerful framework for feature representation and recognition ~\cite{krizhevsky2012imagenet|}. However, current existing CNNs are designed for photos, and they are trained on a large amount of data to avoid overfitting.  Sketches, on the other hand, require special model architectures. In Yu et al. ~\cite{yuqian2016sketchnet}, they proposed Sketch-a-Net, a different type of CNN that is customizable towards sketches. While Sarvadevabhatla et al. ~\cite{sarvadevabhatla2015freehand} used two popular ConvNets (ImageNet and a modified LeNet) to fine-tuned their parameters on the TU-Berlin sketch dataset in order to extract deep features from CNNs to recognize hand-drawn sketches. 
 
 
 %-------------------------------------------------------------------------
 \section{Dataset}
-Eitz et al. ~\cite{eitz2012hdhso} defined a taxonomy of 250 object categories gathered from 20,000 human sketches (TU-Berlin sketch benchmark). The dataset has a total of 250 classes, and it is split into three categories: exhaustive, recognizable, and specific. Images are available as 1111 x 1111 px PNG files, which we have resized to 128 x 128 px grayscale images.
+Eitz et al. ~\cite{eitz2012hdhso} defined a taxonomy of 250 object categories gathered from 20,000 human sketches (TU-Berlin sketch benchmark), and it is currently the largest curated dataset of hand drawn sketches. The dataset has a total of 250 classes, and it is split into three categories: exhaustive, recognizable, and specific. Images within this dataset are available as 1111 x 1111 px PNG files, which we have resized to 128 x 128 px grayscale images.  An example sketch from this dataset can been see in Figure 1. Even though the database covers a range of object categories, its major shortcoming comes from ambiguous drawn sketches ~\cite{schneider2014sketch}. In order to address this problem, Ro?alia et al. ~\cite{schneider2014sketch} were able to find a subset of 160 unambiguous object categories to make a more reliable benchmark. Due to the ambiguity of some images, we are planning to use this curated set of 160 categories.
+
+
+
 
 \begin{figure}[h]
 	\begin{center}
@@ -78,9 +81,9 @@ Eitz et al. ~\cite{eitz2012hdhso} defined a taxonomy of 250 object categories ga
 
 %-------------------------------------------------------------------------
 \section{Approach}
-We first preprocess the dataset to produce 128 x 128 px images. The original images are rescaled from 1111x1111px to 128x128px via bilinear interpolation. The resized images are then read into memory as grayscale 128x128 arrays.
+We first preprocess the dataset to produce 128 x 128 px images. The original images are rescaled from 1111 x 1111px to 128 x 128px via bilinear interpolation. The resized images are then read into memory as grayscale 128x128 arrays.
 
-Our approach follows a fairly standard image classification pipeline. Image arrays are fed into a convolution neural network with the final output being fed to a 250-unit fully connected layer to generate logits for each class. We then apply a softmax loss function to the logits and optimize the loss using the Adam algorithm.
+Our approach follows a fairly standard image classification pipeline. Image arrays are fed into a CNN with the final output being fed to a 250-unit fully connected layer to generate logits for each class. We then apply a softmax loss function to the logits and optimize the loss using the Adam algorithm.
 
 At the moment, we are still experimenting with ConvNet architectures. We have been exploring novel architectures from scratch using convolutional, batch normalization, and pooling layers, but as of this writing, nothing has been very successful. Due to time constraints, we will change our approach after this milestone to using existing architectures such as AlexNet or ResNet as starting points to explore from. We will likely also employ the method of image distortion used by Seddati et al. ~\cite{seddati2015deepsketch} to improve generalization.
 
@@ -92,8 +95,9 @@ Method & mAP \\
 \hline\hline
 SIFT-varient + BoF + SVM  ~\cite{eitz2012hdhso}  &  56 \\
 IDM + SVM ~\cite{yesilbek2015svm} & 71.30 \\
-ConvoNet ~\cite{seddati2015deepsketch}  & 75.42\\
-ConvoNet ~\cite{seddati2016deepsketch} & 77.69\\
+ConvNet ~\cite{seddati2015deepsketch}  & 75.42\\
+ConvNet ~\cite{seddati2016deepsketch} & 77.69\\
+ConvNet --Ours & 0.004 \\
 \hline
 \end{tabular}
 \end{center}
