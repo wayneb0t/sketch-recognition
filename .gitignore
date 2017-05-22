@@ -1,6 +1,7 @@
 *.sw*
 *.pyc
 .env/
+.env3/
 data/png*/
 .ipynb_checkpoints/
 *.aux
