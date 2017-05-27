@@ -24,9 +24,8 @@ def naive_model(X, y, num_classes=250):
     
     return y_out
 
-def resnet(X, y, layer_depth=4, num_classes=250):
+def resnet(X, y, layer_depth=4, num_classes=250, reg=1e-2, is_training=True):
     # RESnet-ish
-    reg = 1e-2
     l2_reg = tf.contrib.layers.l2_regularizer(reg)
 
     """
@@ -34,14 +33,14 @@ def resnet(X, y, layer_depth=4, num_classes=250):
     Output: 64x64x64
     """
     c0 = tf.layers.conv2d(X, 64, [7, 7], strides=[2, 2], padding='SAME', kernel_regularizer=l2_reg)
-    c0 = tf.layers.batch_normalization(c0)
+    c0 = tf.layers.batch_normalization(c0, training=is_training)
     match_dimensions = True
     for i in range(layer_depth):
         c1 = tf.layers.conv2d(c0, 64, [3, 3], padding='SAME', kernel_regularizer=l2_reg) #conv
-        b1 = tf.layers.batch_normalization(c1) #bn
+        b1 = tf.layers.batch_normalization(c1, training=is_training) #bn
         h1 = tf.nn.relu(b1) #relu
         c2 = tf.layers.conv2d(h1, 64, [3, 3], padding='SAME', kernel_regularizer=l2_reg) #conv
-        b2 = tf.layers.batch_normalization(c2) #bn
+        b2 = tf.layers.batch_normalization(c2, training=is_training) #bn
         r = c0 + b2
         c0 = tf.nn.relu(r)
     
@@ -55,10 +54,10 @@ def resnet(X, y, layer_depth=4, num_classes=250):
                               strides=([2, 2] if downsample else [1, 1]),
                               padding='SAME',
                               kernel_regularizer=l2_reg)
-        b1 = tf.layers.batch_normalization(c1) #bn
+        b1 = tf.layers.batch_normalization(c1, training=is_training) #bn
         h1 = tf.nn.relu(b1) #relu
         c2 = tf.layers.conv2d(h1, 128, [3, 3], padding='SAME', kernel_regularizer=l2_reg) #conv
-        b2 = tf.layers.batch_normalization(c2) #bn
+        b2 = tf.layers.batch_normalization(c2, training=is_training) #bn
         if downsample:
             c0_proj = tf.layers.conv2d(c0, 128, [1, 1], padding='SAME', kernel_regularizer=l2_reg)
             c0_proj = tf.layers.average_pooling2d(c0_proj, (2, 2), (2, 2))
@@ -78,10 +77,10 @@ def resnet(X, y, layer_depth=4, num_classes=250):
                               strides=([2, 2] if downsample else [1, 1]),
                               padding='SAME',
                               kernel_regularizer=l2_reg)
-        b1 = tf.layers.batch_normalization(c1) #bn
+        b1 = tf.layers.batch_normalization(c1, training=is_training) #bn
         h1 = tf.nn.relu(b1) #relu
         c2 = tf.layers.conv2d(h1, 256, [3, 3], padding='SAME', kernel_regularizer=l2_reg) #conv
-        b2 = tf.layers.batch_normalization(c2) #bn
+        b2 = tf.layers.batch_normalization(c2, training=is_training) #bn
         if downsample:
             c0_proj = tf.layers.conv2d(c0, 256, [1, 1], padding='SAME', kernel_regularizer=l2_reg)
             c0_proj = tf.layers.average_pooling2d(c0_proj, (2, 2), (2, 2))
@@ -101,10 +100,10 @@ def resnet(X, y, layer_depth=4, num_classes=250):
                               strides=([2, 2] if downsample else [1, 1]),
                               padding='SAME',
                               kernel_regularizer=l2_reg)
-        b1 = tf.layers.batch_normalization(c1) #bn
+        b1 = tf.layers.batch_normalization(c1, training=is_training) #bn
         h1 = tf.nn.relu(b1) #relu
         c2 = tf.layers.conv2d(h1, 512, [3, 3], padding='SAME', kernel_regularizer=l2_reg) #conv
-        b2 = tf.layers.batch_normalization(c2) #bn
+        b2 = tf.layers.batch_normalization(c2, training=is_training) #bn
         if downsample:
             c0_proj = tf.layers.conv2d(c0, 512, [1, 1], padding='SAME', kernel_regularizer=l2_reg)
             c0_proj = tf.layers.average_pooling2d(c0_proj, (2, 2), (2, 2))

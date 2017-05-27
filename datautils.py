@@ -63,6 +63,9 @@ def get_data(num_classes=250, res=128):
         if classes == num_classes:
             break
 
+    X_train -= np.mean(X_train, axis=0)
+    X_val -= np.mean(X_val, axis=0)
+    X_test -= np.mean(X_test, axis=0)
     return X_train, y_train, X_val, y_val, X_test, y_test, labels
 
 def load_image(path):
