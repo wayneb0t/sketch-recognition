@@ -5,18 +5,20 @@ from PIL import Image
 from scipy.misc import imread, imresize, toimage
 
 
-def get_data(num_classes=250, res=128):
+def get_data(num_classes=250, res=128, flip=True):
     """
-    Generates the datasets with 64 training examples, 8 validation examples,
+    Generates the datasets with 128 (or 64) training examples, 8 validation examples,
     and 8 testing examples per class.
     
     Args:
         num_classes: the number of classes to load (for smaller datasets)
         res: the resolution of the output arrays (N x res x res)
+        flip: whether or not to generate additional training examples by horizontally
+              flipping the provided images
     """
     root_dir = "data/png{}/".format("" if res is None else res)
     
-    num_train = 64
+    num_train = 128 if flip else 64
     num_val = 8
     num_test = 8
     
@@ -45,16 +47,22 @@ def get_data(num_classes=250, res=128):
         
         num_images = 0
         for im_file in os.listdir(label_path):
-            im_data = load_image(label_path + im_file)
+            im_data = load_image(label_path + im_file).reshape(res, res, 1)
             
             if num_images < num_train:
-                X_train[train_index] = im_data.reshape(res, res, 1)
+                X_train[train_index] = im_data
                 train_index += 1
+                
+                if flip:
+                    X_train[train_index] = np.flip(im_data, axis=1)
+                    train_index += 1
+                    num_images += 1
+                    
             elif num_images < num_train + num_val:
-                X_val[val_index] = im_data.reshape(res, res, 1)
+                X_val[val_index] = im_data
                 val_index += 1
             else:
-                X_test[test_index] = im_data.reshape(res, res, 1)
+                X_test[test_index] = im_data
                 test_index += 1
                 
             num_images += 1
