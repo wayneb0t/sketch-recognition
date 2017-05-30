@@ -1,4 +1,5 @@
 import tensorflow as tf
+import numpy as np
 
 def naive_model(X, y, num_classes=250):
     c1 = tf.layers.conv2d(X, 32, [7, 7], padding='SAME') # 128 x 128 x 32
@@ -23,9 +24,8 @@ def naive_model(X, y, num_classes=250):
     
     return y_out
 
-def resnet(X, y, layer_depth=4, num_classes=250):
+def resnet(X, y, layer_depth=4, num_classes=250, reg=1e-2, is_training=True):
     # RESnet-ish
-    reg = 1e-2
     l2_reg = tf.contrib.layers.l2_regularizer(reg)
 
     """
@@ -33,14 +33,14 @@ def resnet(X, y, layer_depth=4, num_classes=250):
     Output: 64x64x64
     """
     c0 = tf.layers.conv2d(X, 64, [7, 7], strides=[2, 2], padding='SAME', kernel_regularizer=l2_reg)
-    c0 = tf.layers.batch_normalization(c0)
+    c0 = tf.layers.batch_normalization(c0, training=is_training)
     match_dimensions = True
     for i in range(layer_depth):
         c1 = tf.layers.conv2d(c0, 64, [3, 3], padding='SAME', kernel_regularizer=l2_reg) #conv
-        b1 = tf.layers.batch_normalization(c1) #bn
+        b1 = tf.layers.batch_normalization(c1, training=is_training) #bn
         h1 = tf.nn.relu(b1) #relu
         c2 = tf.layers.conv2d(h1, 64, [3, 3], padding='SAME', kernel_regularizer=l2_reg) #conv
-        b2 = tf.layers.batch_normalization(c2) #bn
+        b2 = tf.layers.batch_normalization(c2, training=is_training) #bn
         r = c0 + b2
         c0 = tf.nn.relu(r)
     
@@ -54,10 +54,10 @@ def resnet(X, y, layer_depth=4, num_classes=250):
                               strides=([2, 2] if downsample else [1, 1]),
                               padding='SAME',
                               kernel_regularizer=l2_reg)
-        b1 = tf.layers.batch_normalization(c1) #bn
+        b1 = tf.layers.batch_normalization(c1, training=is_training) #bn
         h1 = tf.nn.relu(b1) #relu
         c2 = tf.layers.conv2d(h1, 128, [3, 3], padding='SAME', kernel_regularizer=l2_reg) #conv
-        b2 = tf.layers.batch_normalization(c2) #bn
+        b2 = tf.layers.batch_normalization(c2, training=is_training) #bn
         if downsample:
             c0_proj = tf.layers.conv2d(c0, 128, [1, 1], padding='SAME', kernel_regularizer=l2_reg)
             c0_proj = tf.layers.average_pooling2d(c0_proj, (2, 2), (2, 2))
@@ -77,10 +77,10 @@ def resnet(X, y, layer_depth=4, num_classes=250):
                               strides=([2, 2] if downsample else [1, 1]),
                               padding='SAME',
                               kernel_regularizer=l2_reg)
-        b1 = tf.layers.batch_normalization(c1) #bn
+        b1 = tf.layers.batch_normalization(c1, training=is_training) #bn
         h1 = tf.nn.relu(b1) #relu
         c2 = tf.layers.conv2d(h1, 256, [3, 3], padding='SAME', kernel_regularizer=l2_reg) #conv
-        b2 = tf.layers.batch_normalization(c2) #bn
+        b2 = tf.layers.batch_normalization(c2, training=is_training) #bn
         if downsample:
             c0_proj = tf.layers.conv2d(c0, 256, [1, 1], padding='SAME', kernel_regularizer=l2_reg)
             c0_proj = tf.layers.average_pooling2d(c0_proj, (2, 2), (2, 2))
@@ -100,10 +100,10 @@ def resnet(X, y, layer_depth=4, num_classes=250):
                               strides=([2, 2] if downsample else [1, 1]),
                               padding='SAME',
                               kernel_regularizer=l2_reg)
-        b1 = tf.layers.batch_normalization(c1) #bn
+        b1 = tf.layers.batch_normalization(c1, training=is_training) #bn
         h1 = tf.nn.relu(b1) #relu
         c2 = tf.layers.conv2d(h1, 512, [3, 3], padding='SAME', kernel_regularizer=l2_reg) #conv
-        b2 = tf.layers.batch_normalization(c2) #bn
+        b2 = tf.layers.batch_normalization(c2, training=is_training) #bn
         if downsample:
             c0_proj = tf.layers.conv2d(c0, 512, [1, 1], padding='SAME', kernel_regularizer=l2_reg)
             c0_proj = tf.layers.average_pooling2d(c0_proj, (2, 2), (2, 2))
@@ -120,8 +120,8 @@ def resnet(X, y, layer_depth=4, num_classes=250):
     return y_out 
 
 def run_model(session, predict, loss_val, Xd, yd,
-                      epochs=1, batch_size=64, print_every=100,
-                                    training=None, plot_losses=False):
+              epochs=1, batch_size=64, print_every=100,
+              training=None, plot_losses=False):
     # have tensorflow compute accuracy
     correct_prediction = tf.equal(tf.argmax(predict,1), y)
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
@@ -136,7 +136,7 @@ def run_model(session, predict, loss_val, Xd, yd,
     # if we have a training function, add that to things we compute
     variables = [mean_loss,correct_prediction,accuracy]
     if training_now:
-                variables[-1] = training
+        variables[-1] = training
     
     # counter 
     iter_cnt = 0
@@ -151,11 +151,10 @@ def run_model(session, predict, loss_val, Xd, yd,
             idx = train_indicies[start_idx:start_idx+batch_size]
             
             # create a feed dictionary for this batch
-            feed_dict = {X: Xd[idx,:],
-                                             y: yd[idx] }
+            feed_dict = {X: Xd[idx,:], y: yd[idx] }
                         
                         
-                        # get batch size
+            # get batch size
             actual_batch_size = yd[i:i+batch_size].shape[0]
             
             # have tensorflow compute loss and correct predictions
@@ -168,15 +167,15 @@ def run_model(session, predict, loss_val, Xd, yd,
             
             # print every now and then
             if training_now and (iter_cnt % print_every) == 0:
-                                print("Iteration {0}: with minibatch training loss = {1:.3g} and accuracy of {2:.2g}"\
+                print("Iteration {0}: with minibatch training loss = {1:.3g} and accuracy of {2:.2g}"\
                                                               .format(iter_cnt,loss,np.sum(corr)/actual_batch_size))
-                                            iter_cnt += 1
+                iter_cnt += 1
         total_correct = correct/Xd.shape[0]
         total_loss = np.sum(losses)/Xd.shape[0]
         print("Epoch {2}, Overall loss = {0:.3g} and accuracy of {1:.3g}"\
                               .format(total_loss,total_correct,e+1))
-                if plot_losses:
-                                plt.plot(losses)
+        if plot_losses:
+            plt.plot(losses)
             plt.grid(True)
             plt.title('Epoch {} Loss'.format(e+1))
             plt.xlabel('minibatch number')
