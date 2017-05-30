@@ -117,7 +117,199 @@ def resnet(X, y, layer_depth=4, num_classes=250, reg=1e-2, is_training=True):
     p1_flat = tf.reshape(p1, [-1, 512])
     y_out = tf.layers.dense(p1_flat, num_classes, kernel_regularizer=l2_reg)
     
-    return y_out 
+    return y_out
+
+def resnet(X, y, layer_depth=4, num_classes=250, reg=1e-2, is_training=True):
+    # RESnet-ish
+    l2_reg = tf.contrib.layers.l2_regularizer(reg)
+
+    """
+    Input: 128x128x1
+    Output: 64x64x64
+    """
+    c0 = tf.layers.conv2d(X, 64, [7, 7], strides=[2, 2], padding='SAME', kernel_regularizer=l2_reg)
+    c0 = tf.layers.batch_normalization(c0, training=is_training)
+    match_dimensions = True
+    for i in range(layer_depth):
+        c1 = tf.layers.conv2d(c0, 64, [3, 3], padding='SAME', kernel_regularizer=l2_reg) #conv
+        b1 = tf.layers.batch_normalization(c1, training=is_training) #bn
+        h1 = tf.nn.relu(b1) #relu
+        c2 = tf.layers.conv2d(h1, 64, [3, 3], padding='SAME', kernel_regularizer=l2_reg) #conv
+        b2 = tf.layers.batch_normalization(c2, training=is_training) #bn
+        r = c0 + b2
+        c0 = tf.nn.relu(r)
+    
+    """
+    Input: 64x64x64
+    Output: 32x32x128
+    """
+    downsample = True
+    for i in range(layer_depth):
+        c1 = tf.layers.conv2d(c0, 128, [3, 3], 
+                              strides=([2, 2] if downsample else [1, 1]),
+                              padding='SAME',
+                              kernel_regularizer=l2_reg)
+        b1 = tf.layers.batch_normalization(c1, training=is_training) #bn
+        h1 = tf.nn.relu(b1) #relu
+        c2 = tf.layers.conv2d(h1, 128, [3, 3], padding='SAME', kernel_regularizer=l2_reg) #conv
+        b2 = tf.layers.batch_normalization(c2, training=is_training) #bn
+        if downsample:
+            c0_proj = tf.layers.conv2d(c0, 128, [1, 1], padding='SAME', kernel_regularizer=l2_reg)
+            c0_proj = tf.layers.average_pooling2d(c0_proj, (2, 2), (2, 2))
+            r = c0_proj + b2
+            downsample = False
+        else:
+            r = c0 + b2
+        c0 = tf.nn.relu(r)
+
+    """
+    Input: 32x32x128
+    Output: 16x16x256
+    """
+    downsample = True
+    for i in range(layer_depth):
+        c1 = tf.layers.conv2d(c0, 256, [3, 3], 
+                              strides=([2, 2] if downsample else [1, 1]),
+                              padding='SAME',
+                              kernel_regularizer=l2_reg)
+        b1 = tf.layers.batch_normalization(c1, training=is_training) #bn
+        h1 = tf.nn.relu(b1) #relu
+        c2 = tf.layers.conv2d(h1, 256, [3, 3], padding='SAME', kernel_regularizer=l2_reg) #conv
+        b2 = tf.layers.batch_normalization(c2, training=is_training) #bn
+        if downsample:
+            c0_proj = tf.layers.conv2d(c0, 256, [1, 1], padding='SAME', kernel_regularizer=l2_reg)
+            c0_proj = tf.layers.average_pooling2d(c0_proj, (2, 2), (2, 2))
+            r = c0_proj + b2
+            downsample = False
+        else:
+            r = c0 + b2
+        c0 = tf.nn.relu(r)
+
+    """
+    Input: 16x16x256
+    Output: 8x8x512
+    """
+    downsample = True
+    for i in range(layer_depth):
+        c1 = tf.layers.conv2d(c0, 512, [3, 3], 
+                              strides=([2, 2] if downsample else [1, 1]),
+                              padding='SAME',
+                              kernel_regularizer=l2_reg)
+        b1 = tf.layers.batch_normalization(c1, training=is_training) #bn
+        h1 = tf.nn.relu(b1) #relu
+        c2 = tf.layers.conv2d(h1, 512, [3, 3], padding='SAME', kernel_regularizer=l2_reg) #conv
+        b2 = tf.layers.batch_normalization(c2, training=is_training) #bn
+        if downsample:
+            c0_proj = tf.layers.conv2d(c0, 512, [1, 1], padding='SAME', kernel_regularizer=l2_reg)
+            c0_proj = tf.layers.average_pooling2d(c0_proj, (2, 2), (2, 2))
+            r = c0_proj + b2
+            downsample = False
+        else:
+            r = c0 + b2
+        c0 = tf.nn.relu(r)
+    
+    p1 = tf.layers.average_pooling2d(c0, (8, 8), (1,1))
+    p1_flat = tf.reshape(p1, [-1, 512])
+    y_out = tf.layers.dense(p1_flat, num_classes, kernel_regularizer=l2_reg)
+    
+    return y_out
+
+def resnet_dropout(X, y, layer_depth=4, num_classes=250, reg=1e-2, is_training=True):
+    # RESnet-ish
+    l2_reg = tf.contrib.layers.l2_regularizer(reg)
+
+    """
+    Input: 128x128x1
+    Output: 64x64x64
+    """
+    d0 = tf.layers.dropout(X, rate=0.2, training=is_training)
+    c0 = tf.layers.conv2d(d0, 64, [7, 7], strides=[2, 2], padding='SAME', kernel_regularizer=l2_reg)
+    c0 = tf.layers.batch_normalization(c0, training=is_training)
+    match_dimensions = True
+    for i in range(layer_depth):
+        c1 = tf.layers.conv2d(c0, 64, [3, 3], padding='SAME', kernel_regularizer=l2_reg) #conv
+        b1 = tf.layers.batch_normalization(c1, training=is_training) #bn
+        h1 = tf.nn.relu(b1) #relu
+        c2 = tf.layers.conv2d(h1, 64, [3, 3], padding='SAME', kernel_regularizer=l2_reg) #conv
+        b2 = tf.layers.batch_normalization(c2, training=is_training) #bn
+        r = c0 + b2
+        c0 = tf.nn.relu(r)
+    
+    """
+    Input: 64x64x64
+    Output: 32x32x128
+    """
+    downsample = True
+    for i in range(layer_depth):
+        c1 = tf.layers.conv2d(c0, 128, [3, 3], 
+                              strides=([2, 2] if downsample else [1, 1]),
+                              padding='SAME',
+                              kernel_regularizer=l2_reg)
+        b1 = tf.layers.batch_normalization(c1, training=is_training) #bn
+        h1 = tf.nn.relu(b1) #relu
+        c2 = tf.layers.conv2d(h1, 128, [3, 3], padding='SAME', kernel_regularizer=l2_reg) #conv
+        b2 = tf.layers.batch_normalization(c2, training=is_training) #bn
+        if downsample:
+            c0_proj = tf.layers.conv2d(c0, 128, [1, 1], padding='SAME', kernel_regularizer=l2_reg)
+            c0_proj = tf.layers.average_pooling2d(c0_proj, (2, 2), (2, 2))
+            r = c0_proj + b2
+            downsample = False
+        else:
+            r = c0 + b2
+        c0 = tf.nn.relu(r)
+
+    """
+    Input: 32x32x128
+    Output: 16x16x256
+    """
+    downsample = True
+    for i in range(layer_depth):
+        c1 = tf.layers.conv2d(c0, 256, [3, 3], 
+                              strides=([2, 2] if downsample else [1, 1]),
+                              padding='SAME',
+                              kernel_regularizer=l2_reg)
+        b1 = tf.layers.batch_normalization(c1, training=is_training) #bn
+        h1 = tf.nn.relu(b1) #relu
+        c2 = tf.layers.conv2d(h1, 256, [3, 3], padding='SAME', kernel_regularizer=l2_reg) #conv
+        b2 = tf.layers.batch_normalization(c2, training=is_training) #bn
+        if downsample:
+            c0_proj = tf.layers.conv2d(c0, 256, [1, 1], padding='SAME', kernel_regularizer=l2_reg)
+            c0_proj = tf.layers.average_pooling2d(c0_proj, (2, 2), (2, 2))
+            r = c0_proj + b2
+            downsample = False
+        else:
+            r = c0 + b2
+        c0 = tf.nn.relu(r)
+
+    """
+    Input: 16x16x256
+    Output: 8x8x512
+    """
+    downsample = True
+    for i in range(layer_depth):
+        c1 = tf.layers.conv2d(c0, 512, [3, 3], 
+                              strides=([2, 2] if downsample else [1, 1]),
+                              padding='SAME',
+                              kernel_regularizer=l2_reg)
+        b1 = tf.layers.batch_normalization(c1, training=is_training) #bn
+        h1 = tf.nn.relu(b1) #relu
+        c2 = tf.layers.conv2d(h1, 512, [3, 3], padding='SAME', kernel_regularizer=l2_reg) #conv
+        b2 = tf.layers.batch_normalization(c2, training=is_training) #bn
+        if downsample:
+            c0_proj = tf.layers.conv2d(c0, 512, [1, 1], padding='SAME', kernel_regularizer=l2_reg)
+            c0_proj = tf.layers.average_pooling2d(c0_proj, (2, 2), (2, 2))
+            r = c0_proj + b2
+            downsample = False
+        else:
+            r = c0 + b2
+        c0 = tf.nn.relu(r)
+    
+    p1 = tf.layers.average_pooling2d(c0, (8, 8), (1,1))
+    p1_flat = tf.reshape(p1, [-1, 512])
+    d1 = tf.layers.dropout(p1_flat, rate=0.2, training=is_training)
+    y_out = tf.layers.dense(d1, num_classes, kernel_regularizer=l2_reg)
+    
+    return y_out
 
 def run_model(session, predict, loss_val, Xd, yd,
               epochs=1, batch_size=64, print_every=100,

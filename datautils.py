@@ -5,7 +5,7 @@ from PIL import Image
 from scipy.misc import imread, imresize, toimage
 
 
-def get_data(num_classes=250, res=128, flip=True):
+def get_data(num_classes=250, res=128, flip=True, color_invert=True, center=False):
     """
     Generates the datasets with 128 (or 64) training examples, 8 validation examples,
     and 8 testing examples per class.
@@ -15,6 +15,7 @@ def get_data(num_classes=250, res=128, flip=True):
         res: the resolution of the output arrays (N x res x res)
         flip: whether or not to generate additional training examples by horizontally
               flipping the provided images
+        color_invert: whether or not to invert B&W values
     """
     root_dir = "data/png{}/".format("" if res is None else res)
     
@@ -49,6 +50,9 @@ def get_data(num_classes=250, res=128, flip=True):
         for im_file in os.listdir(label_path):
             im_data = load_image(label_path + im_file).reshape(res, res, 1)
             
+            if color_invert:
+                im_data = -1 * im_data + 255
+            
             if num_images < num_train:
                 X_train[train_index] = im_data
                 train_index += 1
@@ -71,9 +75,10 @@ def get_data(num_classes=250, res=128, flip=True):
         if classes == num_classes:
             break
 
-    X_train -= np.mean(X_train, axis=0)
-    X_val -= np.mean(X_val, axis=0)
-    X_test -= np.mean(X_test, axis=0)
+    if center:
+        X_train -= np.mean(X_train, axis=0)
+        X_val -= np.mean(X_val, axis=0)
+        X_test -= np.mean(X_test, axis=0)
     return X_train, y_train, X_val, y_val, X_test, y_test, labels
 
 def load_image(path):
