@@ -19,9 +19,9 @@ def get_data(num_classes=250, res=128, flip=True, color_invert=True, center=Fals
     """
     root_dir = "data/png{}/".format("" if res is None else res)
     
-    num_train = 128 if flip else 64
-    num_val = 8
-    num_test = 8
+    num_train = 96 if flip else 48
+    num_val = 16
+    num_test = 16
     
     labels = []
     
@@ -47,7 +47,7 @@ def get_data(num_classes=250, res=128, flip=True, color_invert=True, center=Fals
         label_path = root_dir + node + "/"
         
         num_images = 0
-        for im_file in os.listdir(label_path):
+        for im_file in sorted(os.listdir(label_path)):
             im_data = load_image(label_path + im_file).reshape(res, res, 1)
             
             if color_invert:
