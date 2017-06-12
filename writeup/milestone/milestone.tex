@@ -108,7 +108,7 @@ p_i = \sigma(s_i) = \frac{e^{s_i}}{\sum_{j = 1}^C s_j}
   Cross-entropy loss has the advantage of being differentiable, in contrast with SVM loss which is not. In addition, cross-entropy loss aims to drive all incorrect class scores to 0 while SVM loss is only concerned with increasing the correct class score above a certain margin.
 
 \subsection{Adam optimization}
-Adam is an adaptive learning rate optimization algorithm which incorporates both moving average of moments to achieve per-parameter scaling of updates. In particular, it increases the step size of variables with slow moving updates and decreases the step size of fast moving updates. It is similar to the RMSProp optimization, but also incorporates momentum updates. Given learning rate $\alpha$, decay parameters $\beta_1, \beta_2$, and numerical stability constant $\varepsilon$, the update step is
+Adam is an adaptive learning rate optimization algorithm which incorporates both moving average of moments to achieve per-parameter scaling of updates \cite{kingma2014adam}. In particular, it increases the step size of variables with slow moving updates and decreases the step size of fast moving updates. It is similar to the RMSProp optimization, but also incorporates momentum updates. Given learning rate $\alpha$, decay parameters $\beta_1, \beta_2$, and numerical stability constant $\varepsilon$, the update step is
 \begin{align}
 m &:= \beta_1 m + (1 - \beta_1) \nabla x \\
 v &:= \beta_2 v + (1 - \beta_2) (\nabla x)^2 \\
