@@ -47,219 +47,310 @@ Stanford University\\
 %%%%%%%%% ABSTRACT
 \begin{abstract}
 
-People use sketches to express and record their ideas. Free-hand sketches are usually drawn by non-artists using touch sensitive devices rather than purpose-made equipments; thus, making them often highly abstract and exhibit large intraclass deformations. This makes automatic recognition of sketches more challenging than other areas of image classification because sketches of the same object can vary based on artistic style and drawing ability. In addition, sketches are less detailed and thus harder to distinguish than photographs. Using a publicly available dataset of 20,000 sketches across 250 classes from Eitz et al. ~\cite{eitz2012hdhso}, we are applying ConvNets (CNNs) in order to improve performance to increase the recognition accuracy on sketches drawn by different people. In our experiments, we analyze the effects of several hyperparmeters on overall performance using a Residual Network (ResNet) approach.  
+People use sketches to express and record their ideas. Free-hand sketches are usually drawn by non-artists using touch sensitive devices rather than purpose-made equipments; thus, making them often highly abstract and exhibit large intraclass deformations. This makes automatic recognition of sketches more challenging than other areas of image classification because sketches of the same object can vary based on artistic style and drawing ability. In addition, sketches are less detailed and thus harder to distinguish than photographs. Using a publicly available dataset of 20,000 sketches across 250 classes from Eitz et al. ~\cite{eitz2012hdhso}, we are applying convolutional neural networks (CNNs) in order to improve performance to increase the recognition accuracy on sketches drawn by different people. In our experiments, we analyze the effects of several hyperparmeters on overall performance using a residual network (ResNet) approach.  
  
 \end{abstract}
 
 %%%%%%%%% BODY TEXT
 \section{Introduction}
-Sketching is one of the primary methods people use to communicate visual information. Since the era of primitive cave paintings, humans have used simple illustrations to represent real-world objects and concepts. Sketches are often abstract and stylized, varying based on artistic ability and style. In addition, sketches emphasize defining characteristics of real-world objects and ignore features which are either less important or more difficult to draw. For example, texture is almost never rendered unless it is important for recognition, such as the spikes on a hedgehog. In this way, sketches can be interpreted as a distillation of human visual recognition schemas.\
+Sketching is one of the primary methods people use to communicate visual information. Since the era of primitive cave paintings, humans have used simple illustrations to represent real-world objects and concepts. Sketches are often abstract and stylized, varying based on artistic ability and style. In addition, sketches emphasize defining characteristics of real-world objects and ignore features which are either less important or more difficult to draw. For example, texture is almost never rendered unless it is important for recognition, such as the spikes on a hedgehog. In this way, sketches can be interpreted as a distillation of human visual recognition schemas.
 
 Sketch recognition attempts to recognize the intent of the user while allowing the user to draw in an unconstrained manner. This allows for the user to not have to spend time being trained how to draw on the system, nor will the system need to be trained on how to recognize each users particular drawing style. Deciphering freehand sketches can be viewed under the lens of image category recognition, a well studied problem in the computer vision community.  
 
-However, the sketch recognition problem differs from traditional photographic image classification. First, sketches are less visually complex than photographs. Whereas color photographs have three color channels per pixel, sketches are encoded as either black-and-white or grayscale. Photographs contain visual information throughout the image whereas sketches consist primarily of blank space. Second, sketches and photographs have different sources of intraclass variation. Whereas photographic image classification faces obstacles such as camera angle, occlusion, and illumination, photographs are still grounded in reality. On the other hand, sketches differ based on artistic style, which is unique to every artist. While people can agree on what an object looks like, how they ultimately render the object can vary significantly.\
+However, the sketch recognition problem differs from traditional photographic image classification. First, sketches are less visually complex than photographs. Whereas color photographs have three color channels per pixel, sketches are encoded as either black-and-white or grayscale. Photographs contain visual information throughout the image whereas sketches consist primarily of blank space. Second, sketches and photographs have different sources of intraclass variation. Whereas photographic image classification faces obstacles such as camera angle, occlusion, and illumination, photographs are still grounded in reality. On the other hand, sketches differ based on artistic style, which is unique to every artist. While people can agree on what an object looks like, how they ultimately render the object can vary significantly.
 
-In this paper, we explore the use of deep convolutional neural networks (DCNN) architectures for sketch recognition. Since DCNNs are primiarly designed for photos, we demonstrate that DCNNs can be used for sketches, but there needs to be some modifications. Here, we are going to modify the ResNet architecture in order for it used for sketches. To the best of our knowledge, ResNets have not been utilized for online sketch recognition.\
+In this paper, we explore the use of deep convolutional neural networks (DCNN) architectures for sketch recognition. Since DCNNs are primiarly designed for photos, we demonstrate that DCNNs can be used for sketches, but there needs to be some modifications. Here, we are going to modify the ResNet architecture in order for it used for sketches. To the best of our knowledge, ResNets have not been utilized for online sketch recognition.
 
 
 %-------------------------------------------------------------------------
 \section{Related Work}
 
-Since SketchPad ~\cite{sutherland1964sketchpad}, sketch recognition has introduced sketching as a means of human computer interaction. Computer vision has since tried different approaches to achieve better results in multiple application areas. Eitz et al. ~\cite{eitz2012hdhso} was able to demonstrate classification rates can be achieved for computational sketch recognition by using local feature vectors, bag of features sketch representation and SVMs to classify sketches. Schneider et al.~\cite{schneider2014sketch} then modified the benchmark proposed by Eitz et al ~\cite{eitz2012hdhso}  by making it more focused on how the image should like, rather than the original drawing intention, and they also used SIFT, GMM based on Fisher vector encoding, and SVMs to achieve sketch recognition.\
+Since SketchPad ~\cite{sutherland1964sketchpad}, sketch recognition has introduced sketching as a means of human computer interaction. Computer vision has since tried different approaches to achieve better results in multiple application areas. Eitz et al. ~\cite{eitz2012hdhso} was able to demonstrate classification rates can be achieved for computational sketch recognition by using local feature vectors, bag of features sketch representation and SVMs to classify sketches. Schneider et al.~\cite{schneider2014sketch} then modified the benchmark proposed by Eitz et al ~\cite{eitz2012hdhso}  by making it more focused on how the image should like, rather than the original drawing intention, and they also used SIFT, GMM based on Fisher vector encoding, and SVMs to achieve sketch recognition.
 
-Pervious work on sketch recognition generally extracts hand crafted features from the sketch followed by feeding them to a classifier.  Convolutional neural networks (CNN) have emerged as a powerful framework for feature representation and recognition ~\cite{krizhevsky2012imagenet}.  Convolutional neural networks are a type of neurobiologically inspired feed-forward artificial neural network which consist of multiple layers of neurons,  and  the neurons in each layer are then collected into sets. At the input layer, where the data gets introduce to the CNN, these neuron sets map to small regions of input image. Deeper layers of the network can be composed of local or global pooling (fully-connected) layers which combine outputs of the neuron sets from previous layer. The pooling is typically achieved through convolution-like operations. Deep neural networks (DNN), especially CNNs, can automatically learn features instead of manually extracting features and its multi layers learning can get more effective expression. When it comes to CNN design, the trend in the past few years has pointed in one direction: deeper networks [ ~\cite{krizhevsky2012imagenet}]. This move towards deeper networks  has been beneficial for many applications. The most prominent application has been object classification, where the deeper the neural network, the better the performance. However, current existing CNNs are designed for photos, and they are trained on a large amount of data to avoid overfitting.  \
+Pervious work on sketch recognition generally extracts hand crafted features from the sketch followed by feeding them to a classifier.  Convolutional neural networks (CNN) have emerged as a powerful framework for feature representation and recognition ~\cite{krizhevsky2012imagenet}.  Convolutional neural networks are a type of neurobiologically inspired feed-forward artificial neural network which consist of multiple layers of neurons,  and  the neurons in each layer are then collected into sets. At the input layer, where the data gets introduce to the CNN, these neuron sets map to small regions of input image. Deeper layers of the network can be composed of local or global pooling (fully-connected) layers which combine outputs of the neuron sets from previous layer. The pooling is typically achieved through convolution-like operations. Deep neural networks (DNN), especially CNNs, can automatically learn features instead of manually extracting features and its multi layers learning can get more effective expression. When it comes to CNN design, the trend in the past few years has pointed in one direction: deeper networks [ ~\cite{krizhevsky2012imagenet}]. This move towards deeper networks  has been beneficial for many applications. The most prominent application has been object classification, where the deeper the neural network, the better the performance. However, current existing CNNs are designed for photos, and they are trained on a large amount of data to avoid overfitting. 
 
-CNNs, despite of having better classification performance, are harder to train, and an effective way to solve this problem is suggested using a ResNets [~\cite{hekaming2016}].  In a traditional activation layer, when the signal is sent backwards, the gradient must pass through all their convolutional layers, which can cause trouble due to the nonlinearities which are involved. ResNet, on the other hand, provides the networks with shortcut at each layer to make sending the gradient signal backwards more smoothly without the intermediate layers being diminished This shortcut allows addressing the problem of vanishing gradients and faster training. An example of a ResNet building block can be seen in Figure 1.\
+Traditional CNNs are limited in depth, as empirical results showed that training error increased with depth, suggesting that deeper networks become increasingly hard to train. This problem was addressed by He et al. with the introduction a deep residual network architecture, which uses shortcut connections to allow convolutional layers to approximate residuals rather than actual mappings \cite{hekaming2016}. Their model was able to set new records for both the ImageNet and COCO datasets, and through the application of residual networks, CNNs with over a thousand layers have been trained.
 
- \begin{figure}[h]
-	\begin{center}
-	\includegraphics[width=.5\linewidth]{resnet}
-	\caption{Model of a basic residual unit [ ~\cite{hekaming2016 }] }
-	\end{center}
-\end{figure}
-
-Sketches, on the other hand, require special model architectures. In 2012, Eitz et al.~\cite{eitz2012hdhso} released the largest sketch object dataset. Since its release, a number of approaches have been proposed to recognize freehand sketches.  In Yu et al. ~\cite{yu2016sketch}, they proposed Sketch-a-Net, a different type of CNN that is customizable towards sketches. While Sarvadevabhatla et al. ~\cite{sarvadevabhatla2015freehand} used two popular ConvNets (ImageNet and a modified LeNet) to fine-tuned their parameters on the TU-Berlin sketch dataset in order to extract deep features from CNNs to recognize hand-drawn sketches. The current state-of-the-art is [~\cite{seddati2016deepsketch}], where propose a ConvNet for classification but they also include in feature extraction and similarity search. 
+Sketches, on the other hand, require special model architectures. In 2012, Eitz et al.~\cite{eitz2012hdhso} released the largest sketch object dataset. Since its release, a number of approaches have been proposed to recognize freehand sketches.  In Yu et al. ~\cite{yu2016sketch}, they proposed Sketch-a-Net, a different type of CNN that is customizable towards sketches. While Sarvadevabhatla et al. ~\cite{sarvadevabhatla2015freehand} used two popular CNN architectures (ImageNet and a modified LeNet) to fine-tuned their parameters on the TU-Berlin sketch dataset in order to extract deep features from CNNs to recognize hand-drawn sketches. The current state-of-the-art is ~\cite{seddati2016deepsketch}, where propose a ConvNet for classification but they also include in feature extraction and similarity search. 
 
 
 %-------------------------------------------------------------------------
 
 \section{Method}
+\subsection{Residual networks}
+Deep residual networks were used by He et al. to great success on image classification challenges, including ImageNet and CIFAR-10 \cite{hekaming2016}. Residual networks differ from standard neural networks in that instead of learning a target mapping $x \rightarrow H(x)$, they attempt to learn the residual mapping $F(x) = H(x) - x$. The original mapping is then recovered as $H(x) = F(x) + x$. These residual mappings are implemented as modular residual units which consist of a stack of convolutional layers and a shortcut connection which carries the original input $x$. When the convolutional layers produce output of the same dimensions, $x$ is simply passed through with an identity projection. When the output dimensions change, such as in the case of pooling or increased stride, $x$ is projected to the new dimensions via a 1x1 convolution followed by average pooling.
 
-The ResNet model introduced in [~\cite{hekaming2016}] is our starting point for the network design.  ResNet  is specifically designed for images in ImageNet and accepts images with size 256 × 256 and classifies them in 1000 categories. However, since ResNet is used for images and we are trying to classify sketches, we did some customization to the original network. We chose to use this ResNet architecture in order to improve performance over traditional multi-class support vector classification.  \
- 
- Tensorflow is a scientific open source computing framework with wide support for neural network implementations.  For our framework, we used Tensorflow to implement and train different insipiried ResNet Models. \\
- 
+ \begin{figure}[h]
+	\begin{center}
+	\includegraphics[width=.5\linewidth]{resnet}
+	\caption{Model of a 2-layer basic residual unit using the identity projection \cite{hekaming2016}. }
+	\end{center}
+\end{figure}
+
+\subsection{Wide residual networks}
+Wide residual networks were proposed by Zagoruyko and Komodakis as an alternative to deep residual networks \cite{zagoruyko2016wide}. The authors widen a network by increasing the number of filters per convolutional layer while decreasing the overall depth in the network, in contrast to the original ResNet architecture which was thin and deep. Properly tuned wide networks have fewer parameters than deep networks, thus requiring less memory to store and less time to train. In this project, we briefly experiment with the effects of trading depth for width with a wide variant of our base architecture.
+
+\subsection{Dropout}
+Dropout was introduced by Srivastava et al. as a simple stochastic regularization method \cite{srivastava2014dropout}. Dropout reduces the number of active neurons during training time by setting the output of a neuron to 0 with probability $p$. Intuitively, this forces the next layer in the network to train on sparser and more randomized input, which helps prevent overfitting on the training data. In the original formulation of dropout, zeroing does not occur during inference. Instead, outputs are simply scaled by $(1 - p)$ to their expected values. This requires additional computation during inference time, which is undesirable. As a solution, inverted dropout combines zeroing and scaling output by $1 / (1 - p)$ during training so that no additional computation is required during inference. Our model makes use of periodic inverted dropout for regularization.
+
+
+\subsection{Softmax cross-entropy loss}
+Softmax cross-entropy loss is one of the standard loss function for classification problems. For a single example, given the class score output $s_1, s_2, \dots, s_C$ of a neural network, the scores are converted to probabilities $p_1, \dots, p_C$ via the softmax function 
+\begin{align}
+p_i = \sigma(s_i) = \frac{e^{s_i}}{\sum_{j = 1}^C s_j}
+\end{align}
+ Let $y$ be the correct class. Then, the cross-entropy loss is 
+ \begin{align}
+ L = -\log p_y = -\log \left( \frac{e^{s_y}}{\sum_{j = 1}^C s_j} \right)
+ \end{align}
+  Cross-entropy loss has the advantage of being differentiable, in contrast with SVM loss which is not. In addition, cross-entropy loss aims to drive all incorrect class scores to 0 while SVM loss is only concerned with increasing the correct class score above a certain margin.
+
+\subsection{Adam optimization}
+Adam is an adaptive learning rate optimization algorithm which incorporates both moving average of moments to achieve per-parameter scaling of updates. In particular, it increases the step size of variables with slow moving updates and decreases the step size of fast moving updates. It is similar to the RMSProp optimization, but also incorporates momentum updates. Given learning rate $\alpha$, decay parameters $\beta_1, \beta_2$, and numerical stability constant $\varepsilon$, the update step is
+\begin{align}
+m &:= \beta_1 m + (1 - \beta_1) \nabla x \\
+v &:= \beta_2 v + (1 - \beta_2) (\nabla x)^2 \\
+x &:= x - \alpha \frac{m}{\sqrt{v} + \varepsilon}
+\end{align}
+
+The full version of the optimization algorithm also introduces bias terms to help the algorithm initialize its states at the beginning of training.
+
+\subsection{Convolutional network architectures}
+In this project, we explore four different convolutional network architectures. The basic architecture consists of an initial 7x7 convolutional layer. This layer is then followed by a series of 12 3x3 residual units, for a total of 25 convolutional layers (not including layers used for residual projection). Every third residual unit, the feature map size is halved by increasing stride while the number of filters is doubled. At the end of the network, global average pooling is used and followed by a fully connected layer to output logits for softmax cross-entropy loss. Dropout is applied on the initial input, every third residual unit, and before the fully connected layer.
+
+The wide variant of the architecture replaces the 12 residual units with 8 residual units of doubled width, for a total of 17 convolutional layers. Dimension changes occur every second residual unit rather than every third unit, and dropout is applied every second unit rather than every third. The rest of the architecture remains the same.
+
+The widest variant of the architecture consists of an initial 7x7 convolutional layer followed by 3 wide 3x3 residual units. The residual units are followed by a bottleneck layer then a 2048-filter layer, for a total of 9 convolutional layers. As in the basic architecture, global average pooling and a fully connected layer are used to generate logits. Dropout is applied on the initial input, after residual units, and before the fully connected layer.
+
+The fourth fusion variant is almost identical to the basic architecture, but doubles the width of the last set of 3 residual units to 1024, as a more controlled experiment on the effects of width.
 
 \begin{figure}[h]
 \begin{center}
-\begin{tabular}{l | l | l}
-Layer & Output Size & Feature Depth \\ \hline \hline
+\begin{tabular}{l | r}
+Layer & Output Size \\ \hline \hline
 Input	& 128x128x1\\
-Dropout &128x128x1 \\
+Dropout &  \\
 7x7 conv, 64, /2	 & 64x64x64\\
 3x3 residual unit, 64	& 64x64x64\\
-3x3 residual unit, 64 & 64x64x64\\
-3x3 residual unit, 64	& 64x64x64\\
-Dropout	& 64x64x64 \\
+3x3 residual unit, 64 & \\
+3x3 residual unit, 64	& \\
+Dropout	&  \\
 3x3 residual unit, 128, /2 & 32x32x128\\
-3x3 residual unit, 128 & 32x32x128\\
-3x3 residual unit, 128 &	32x32x128\\
-Dropout & 32x32x128\\
+3x3 residual unit, 128 & \\
+3x3 residual unit, 128 &\\
+Dropout & \\
 3x3 residual unit, 256, /2 & 16x16x256\\
-3x3 residual unit, 256 & 16x16x256\\
-3x3 residual unit 256	 & 16x16x256\\
-Dropout	& 16x16x256\\
+3x3 residual unit, 256 & \\
+3x3 residual unit 256	 & \\
+Dropout	& \\
 3x3 residual unit, 512, /2	& 8x8x512\\
-3x3 residual unit, 512	& 8x8x512\\
-3x3 residual unit, 512& 	8x8x512\\
+3x3 residual unit, 512	&\\
+3x3 residual unit, 512& \\
 8x8 Average Pooling	& 512\\
-Dropout& 	512\\
-FC-250	& 250
-
+Dropout& 	\\
+Fully connected, 250	& 250
 \end{tabular}
-\caption{ConvNet architecture. The "-$f$" notation refers to a layer with a $f$x$f$ filter. The "/$s$" notation refers to a layer with stride $s$. Each residual unit consists of }
+\caption{Basic convolutional network architecture.}
 \end{center}
 \end{figure}
 
+\begin{figure}[h]
+\begin{center}
+\begin{tabular}{l | r}
+Layer & Output Size \\ \hline \hline
+Input	& 128x128x1\\
+Dropout &  \\
+7x7 conv, 128, /2	 & 64x64x128\\
+3x3 residual unit, 128	& 64x64x128\\
+3x3 residual unit, 128 & \\
+Dropout	&  \\
+3x3 residual unit, 256, /2 & 32x32x256\\
+3x3 residual unit, 256 & \\
+Dropout & \\
+3x3 residual unit, 512, /2 & 16x16x512\\
+3x3 residual unit, 512 & \\
+Dropout	& \\
+3x3 residual unit, 1024, /2	& 8x8x1024\\
+3x3 residual unit, 1024	&\\
+8x8 Average Pooling	& 1024\\
+Dropout& 	\\
+Fully connected, 250 	& 250
+\end{tabular}
+\caption{Wide convolutional network architecture.}
+\end{center}
+\end{figure}
 
-Our specific architecture is as follows: after our input layer, we introduce a dropout and a convolutional layer. Following the convolutional layer, we have three residual units. Dropout, convolutional layer, and the three residual units repeats itself four times before our average pooling is introduced with a dropout. The final layer has 250 output units corresponding to 250 categories (this number is the number of classes within the TU-Berlin sketch dataset), upon which we place a softmax loss. The specfic details of our CNN network are summarized in Figure 2. 
-
-
-Todo: add in equations/algo 
+\begin{figure}[h]
+\begin{center}
+\begin{tabular}{l | r}
+Layer & Output Size \\ \hline \hline
+Input	& 128x128x1\\
+Dropout & \\
+7x7 conv, 256, /2	 & 64x64x256\\
+3x3 residual unit, 256	& 64x64x256\\
+Dropout	&  \\
+3x3 residual unit, 256, /2 & 32x32x256\\
+Dropout & \\
+3x3 residual unit, 512, /2 & 16x16x512\\
+Dropout	& \\
+1x1 conv, 256 & 16x16x256 \\
+3x3 conv, 2048, /2 & 8x8x2048 \\
+8x8 Average Pooling	& 2048\\
+Dropout& 	\\
+Fully connected, 250	& 250
+\end{tabular}
+\caption{Widest convolutional network architecture.}
+\end{center}
+\end{figure}
 
 %-------------------------------------------------------------------------
 \section{Dataset}
 \begin{figure}[h]
 	\begin{center}
 	\includegraphics[width=0.5\linewidth]{airplane}
-	\caption{Example sketch from the TU Berlin dataset}
+	\caption{Example sketch from the TU Berlin dataset.}
 	\end{center}
 \end{figure}
 
-Eitz et al. ~\cite{eitz2012hdhso} defined a taxonomy of 250 object categories gathered from 20,000 human sketches (TU-Berlin sketch benchmark) from Amazon Mechanical Turk (AMT) from 1,350 participants. This dataset provides diversity in both catergories and sketch styles within classes. The TU- Berlin dataset is currently the largest curated dataset of hand drawn sketches. The dataset has a total of 250 classes, 80 sketches per class, and it is split into three categories: exhaustive, recognizable, and specific. Images within this dataset are available as 1111 x 1111 px PNG files.  An example sketch from this dataset can been see in Figure 2. 
+For this project, we are using a dataset of sketches collected by Eitz et al. \cite{eitz2012hdhso}. The dataset consists of 20,000 images evenly distributed across 250 different classes and was collected from 1,350 participants via Amazon Mechanical Turk, a crowdsourcing platform. Images are provided as 1111x1111px PNG files.
 
-For our project, we first rescaled the original sketches from 1111x1111 px to 128x128 px via bilinear interpolation. Since there are only 80 sketches in each class, we needed to overcome overfitting by performing data augmentation. To augment the training data, we generated additional training sketch examples by horizontally flipping existing training examples as well as inverting all examples to better match the effects of our input dropout. An example of an inverted sketch can be seen in Figure 4. This inversion and horizontal flipping was a similar method in  ~\cite{seddati2015deepsketch} , where they proposed image distortion to improve generalization. The total amount of sketches we had to work with is 40,000. The resized images are then read into memory as grayscale 128x128 arrays.
+To make the dataset more manageable, we first resized every image to 128x128px using bilinear interpolation. For each class, there are 80 images which we divide in 48 training examples, 16 validation examples, and 16 test examples. To augment the low number of training examples, we generate additional examples by horizontally flipping the provided images, for a total of 96 training examples per class. This is similar to the data augmentation used by Seddati et al., who implemented training time image distortion through mirror and rotation \cite{seddati2015deepsketch}. In total, we used 24,000 training examples, 4,000 validation examples, and 4,000 testing examples, evenly distributed across the 250 classes. The images are read into memory and stored as grayscale 128x128x1 arrays. On loading, we also invert the images so that the behavior of our input dropout creates white space when zeroing inputs.
 
-
-Even though the database covers a range of object categories, its major shortcoming comes from ambiguous drawn sketches ~\cite{schneider2014sketch}. In order to address this problem, Rosalia et al. ~\cite{schneider2014sketch} were able to find a subset of 160 unambiguous object categories to make a more reliable benchmark. However, we are choosing to use all 250 object categories in order to compare our accuracies with other models. 
+Even though the database covers a range of object categories, its major shortcoming comes from ambiguous drawn sketches ~\cite{schneider2014sketch} and overlapping object classes. For examples, the object classes include both "sea gull" and "flying bird." In order to address this problem, Rosalia et al. ~\cite{schneider2014sketch} were able to find a subset of 160 unambiguous object categories to make a more reliable benchmark. However, we are choosing to use all 250 object categories in order to compare our accuracies with other models. 
  
 \begin{figure}[h]
 	\begin{center}
 	\includegraphics[width=.5\linewidth]{invert_colors_2}
-	\caption{Example sketch of inverted with inverted color value that was fed into our model}
+	\caption{Example sketch of inverted with inverted color value that was fed into our model.}
 	\end{center}
 \end{figure}
  
 
 %-------------------------------------------------------------------------
 
-\section{Experiment}
-
-to do: it says you should have a confusion matrix or a roc curve since we're doing classification, but we have so many classes. just throw on in there? thoughts?
-
-also can you make our train and test val graphs bigger/ take up the top half of the page? right now it's squeezed and really small. i wasn't able to do that 
-
- Our approach follows a fairly standard image classification pipeline. Following previous work we performed 3-fold cross-validation within
-this dataset (2 folds for training and 1 for testing). Image arrays are fed into a CNN with the final output being fed to a 250-unit fully connected layer to generate logits for each class. We then apply a softmax loss function to the logits and optimize the loss using the Adam (Adaptive Moment Estimation) algorithm. We chose to use Adam because  it compares favorably to other adaptive learning-method algorithms.
-
-We tried to train multiple deep ResNets varying from x to x layers to see which one performs better on the TU-Berlin dataset. The network with the most layers was the one that performed the best showing that ConvNets are able to learn concepts that are more abstract with the depth of the network. This is important to highlight, because sketches are generally very abstract. All of the CNNs were trained with batch size of 32. 
-
-
-With varying amount of layers to make the model deeper, we also tried several approaches of dropout to counter overfitting as well as different sizes of width for our filters. A more aggressive dropout of 60 and a lesser aggressive dropout of 25 does not improve our validation accuracy.  We also tried a variation of width for our layers. Using these different parameters, our best model was our Vanilla ResNet. This best performing model can be seen in Figure 2. With this model, we were able to achieve a test accuracy of 65.15, but the other types of parameters fall within this range of accuracy. The results are brought in Table 1. Note: all of our models are trained for the same number of epochs. 
+\section{Experiments}
+\subsection{Dropout rates}
+Our first set of experiments were focused on investing the effects of dropout rates on classification accuracy. In these experiments, we use the basic architecture with dropout rates of 0\%, 20\%, and 50\%. Each network is trained for 15 epochs with a training rate of 0.001 and for 5 epochs with a decayed training rate of 0.0001. After every epoch, validation accuracy is computed and the weights of the network are saved. After the training epochs, the set of weights with the highest validation accuracy are used to compute the test accuracy.
 
 \begin{table}[h]
-\begin{center}
-\begin{tabular}{|l|c|}
-\hline
-Method & \% \\
-\hline\hline
-ResNet-aggro-dropout &  65.3 \\
-ResNet Vanilla & 65.15 \\
-ResNet Weak Dropout & 65.6\\
-ResNet Wide &  65.3\\ 
-ResNet  Wide V2 & 63.9\\
-ResNet Wider  &  58.8\\
-ResNet Widish  & 62.05\\ 
-ResNet Widest &  55.8\\
-\hline
-\end{tabular}
-\end{center}
-\caption{Validation performance comparison between our different parameters}
+	\begin{center}
+	\begin{tabular}{l | c}
+	Dropout rate & Test accuracy \\ \hline \hline
+	0\% & 0.651 \\
+	20\% & 0.656 \\
+	50\% & 0.653 \\
+	\end{tabular}
+	\caption{Test accuracies of varying dropout rates on the basic architecture.}
+	\end{center}
 \end{table}
-{\small
-\bibliographystyle{ieee}
-\bibliography{milestone}
-}
 
-In Table 1 and Figure 7, we compared all of our model's training and validation accuracies. Looking at the training accuaries (Figure 7), we see that there is a rapid increasement of accuracy over the amount of epochs. The Vanilla ResNet architecture increases most rapidly compared to the others models, but the ResNet-Weak-dropout model reaches the same training accuracies as the Vanilla ResNet model. The Canilla ResNet and Weak-dropout ResNet architecture have the highest training accuracy compared to the other models. On the other hand, all our validation accuracies level out near the end of training. There is a drastic drop in the validation accuracy for Widish-ResNet model, but it the accuracy picks back up and ends up within the same range of validation accuracies as the other models. 
-
-The difference between training accuracy and validation accuracy of our models is a good indicator of overfitting. Based on our results, we realized that ResNets are more prone to overfitting. However, these results show that adding a simple shortcut connection can improve the accuracy in the classification task and make the training process much faster, but  the trade of is that residual networks are more prone to over-fitting which is undesirable. Our results also suggest that depth is the largest contributing factor to classification accuracy, with dropout regularization providing minor improvement. Widening layers does not result in noticeable changes, and the need to reduce memory consumption by reducing network depth in fact leads to lower accuracy. 
-
-\begin{table}[h]
-\begin{center}
-\begin{tabular}{|l|c|}
-\hline
-Method & \% \\
-\hline\hline
-SIFT-varient + BoF + SVM  ~\cite{eitz2012hdhso}  &  56 \\
-IDM + SVM ~\cite{yesilbek2015svm} & 71.30 \\
-ConvNet ~\cite{seddati2015deepsketch}  & 75.42\\
-ConvNet ~\cite{seddati2016deepsketch} & 77.69\\
-ConvNet -- Ours & 65.15 \\
-\hline
-\end{tabular}
-\end{center}
-\caption{Test accuracy comparison of our model versus other methods.}
-\end{table}
-{\small
-\bibliographystyle{ieee}
-\bibliography{milestone}
-}
-
-Our experiments illustrate the complexity of free-hand sketch recognition. An example of the variability of sketches can be seen in Figure 5. This type of varaibility of sketches causes the model to be confused. Where if some edges are similar to another previous trained edge, it will think that particular sketch will belong to a class that is not its true class. An example of such can be viewed in Figure 6. For Figure 6, the model was presented with the airplane (right), and the model classified it as a syringe (left). Notice how similar the edges are within these two sketches, and there is no "true" airplane wing either which is a distinguishable feature for an airplane. 
-
-Table 2 summarizes the overall performance in terms of average recognition accuracy for various architectures compared to our highest performing model. While our CNN  model?s performance is not quite as strong as the CNN model of [~\cite{krizhevsky2012imagenet}], in terms of test accuracies, we would like to point out that the authors used a larger CNN on a larger external dataset through pooling additional sketches through Google. 
-
-
+The results show that varying dropout rate does not appear to have a noticeable effect on accuracy, as all test accuracies are within 1\% of each other. Instead, the effects of dropout manifest in the training accuracy curves, in which stronger dropout leads to slow convergence of training accuracy. This suggests that our model would benefit from increased model capacity to improve its representational power rather than from stronger regularization.
 
 \begin{figure}[h]
 	\begin{center}
-	\includegraphics[width=1\linewidth]{Spondgebob}
-	\caption{ Examples of interclass variations of Spongebob from the TU Berlin dataset highlighting the variability }
+	\includegraphics[width=0.75\linewidth]{dropout-val-acc}
+	\caption{Validation accuracy curves for varying dropout rates. Note that the curves are nearly identical.}
 	\end{center}
 \end{figure}
-
-
-Though our model was able to outperform the traditional multi-class support vector classifiers (SVMs) [1] , there is still more improvement that can be done. Along with that, we were not able to train the model as long as we would have hoped. If you notice in Figure 7 the validation accuracy for our models has not completely leveled out. An example of an error our model made can be seen in Figure 5. 
-
 
 \begin{figure}[h]
 	\begin{center}
-	\includegraphics[width=1\linewidth]{mistake}
-	\caption{ An example of where our model thought the airplane (right) was a syringe (left). This shows the variability of human sketches }
+	\includegraphics[width=0.75\linewidth]{dropout-train-acc}
+	\caption{Training accuracy curves for varying dropout rates. Note that stronger dropout leads to slower learning rates.}
 	\end{center}
 \end{figure}
 
+\subsection{Network depth}
+The second set of experiments investigate the effects of network depth on classification accuracy. In this set of experiments, we use the four previously discussed architectures, each trained with 50\% dropout. Each network is trained for 15 epochs with a training rate of 0.001 or until loss plateaus, then trained for 5 epochs with a training rate of 0.0001 or until loss plateaus, which occurs first. As before, the weights are saved after every training epoch, and the set of weights with the highest validation accuracy are used to compute the test accuracy.
+
+\begin{table}[h]
+	\begin{center} 
+	\begin{tabular}{l | c | c | c}
+	Model & Depth & Parameters & Test accuracy \\ \hline \hline
+	Basic & 25 & 17.6M & 0.653 \\
+	Wide & 17 & 45.7M & 0.621 \\
+	Widest & 9 & 11.5M & 0.588 \\
+	Fusion & 25 & 20.2M & 0.653
+	\end{tabular}
+	\caption{Test accuracies of network architectures with varying depths.}
+	\end{center}
+\end{table}
+
+The results show a clear correlation between network depth and classification accuracy. Increasing the width of the "wide" and "widest" networks was not enough to compensate for decreasing the depth. Notably, the wide network performed worse than the basic network, despite having almost 3 times as many parameters. These numbers do not necessarily contradict the results of Zuoruyko and Komodakis, as their work primarily focused on reducing the depth of networks with over 1000 layers. It could instead be said that our networks are still at a scale which would see more benefit from adding layers to introduce more non-linearity than from increasing width to increase the overall model capacity.
+
+\subsection{Results comparison and analysis}
+Of the experiments, our best performing model used the basic architecture with a 20\% dropout rate. It achieved a test accuracy of 65.6\%. In comparison, this is better than the original classifier proposed by Eitz et al. which utilized an SVM classifier trained on extracted SIFT features \cite{yesilbek2015svm}. However, state-of-the-art achieves much higher accuracy, with Seddati et al. reaching 75.4\% and 77.7\% cross-validation accuracy with their convolutional DeepSketch and DeepSketch 2 models \cite{seddati2015deepsketch} \cite{seddati2016deepsketch}. In addition, Yesilbek et al. were able to reach 71.30\% cross-validation accuracy using an SVM classifier trained on traditional image features \cite{yesilbek2015svm}.
+
+\begin{table}[h]
+        \begin{center}
+        \begin{tabular}{l | c}
+        Model & Accuracy \\
+        \hline\hline
+        SIFT+ SVM  ~\cite{eitz2012hdhso}  &  0.560 \\
+        \textbf{Basic, 20\% dropout}& \textbf{0.656} \\
+        IDM + SVM ~\cite{yesilbek2015svm} & 0.713 \\
+        Human ~\cite{eitz2012hdhso} & 0.730 \\
+        DeepSketch ~\cite{seddati2015deepsketch}  & 0.754\\
+        DeepSketch2 ~\cite{seddati2016deepsketch} & 0.777\\
+        \end{tabular}
+        \end{center}
+        \caption{Test accuracy comparison of our model versus other methods.}
+\end{table}
+
+Due to the large number of classes, we have omitted a confusion matrix. Instead, we computed the three most easily and least easily classified labels. 
+
+\begin{table}[h]
+        \begin{center}
+        \begin{tabular}{l | c}
+        Label & Accuracy \\
+        \hline\hline
+        Rollerblades & 1.0 \\
+        Nose & 1.0 \\
+        Zebra & 0.9375 \\ \hline
+        Dragon & 0.1875 \\
+        Seagull & 0.125 \\
+        Panda & 0.0625
+        \end{tabular}
+        \end{center}
+        \caption{Classification accuracies of the three most easily and three least easily classified labels}
+\end{table}
+
+Unsurprisingly, "seagull" is the second-worst label. Further examination reveals that its examples are misclassified 5 times as a pigeon, 3 times as a standing bird, twice as a flying bird, and once each as a syringe, duck, and canoe. This demonstrates the problems which arise from interclass overlap because for many people, there is no difference between drawing these varieties of birds. 
 
 \begin{figure}[h]
-	\includegraphics[width=1\linewidth]{train_val}
-	\caption{ Training and Validation compairision between all our models  }
-	
+	\begin{center}
+	\includegraphics[width=0.3\linewidth]{seagull}
+	\includegraphics[width=0.3\linewidth]{pigeon}
+	\includegraphics[width=0.3\linewidth]{standingbird}
+	\caption{From left to right: a seagull, a pigeon, and a standing bird.}
+	\end{center}
+\end{figure}
+
+"Panda," as the worst label, is an example of both intraclass variation and interclass overlap. Panda examples were misclassified as teddy bears 6 times, or one-third of the testing examples. In addition, the sketches span a large variety of poses, colorations, and artistic talent. In contrast, sketches of rollerblades all encompass the same general idea of a foot shaped object on top of circles, representing the boot and wheels of a rollerblade.
+
+\begin{figure}[h]
+	\begin{center}
+	\includegraphics[width=0.3\linewidth]{panda1}
+	\includegraphics[width=0.3\linewidth]{panda2}
+	\includegraphics[width=0.3\linewidth]{panda3}
+	\caption{Three images from the panda classification. Note the large variation in posing and coloring.}
+	\end{center}
 \end{figure}
 
 %-------------------------------------------------------------------------
 \section{Conclusion}
 
-In this paper, we have presented our CNN architecture for freehand sketch recognition. We see that in our model, where free-hand sketches are inherently hard to classify due to large amounts of intraclass variation and interclass overlap, along with a lack of complex visual information, in contrast to traditional image recognition which instead deals with an overabundance of visual information. 
-Sketches are usually centered around the edges, and for most neural networks edge detection is within the first few layers. 
+In this paper, we have presented our CNN architecture for freehand sketch recognition. From our results, we see evidence of the intraclass variation and interclass overlap caused by differences in artistic interpretation and scarcity of visual information which make sketch recognition challenging. In contrast, traditional image recognition faces the problems of variation and overlap caused by an overabundance of visual noise in photographs.
 
-Our experiments showed that moderate dropout with deep networks provides the best results. Overaggressive dropout and shallow networks both lead to lower accuracy. Notably, compensating for shallowness with increased width does not result in improved accuracy. 
-ResNets are more powerful for very deep networks and and can hurt the performance for shallow networks. ResNets, however, does show promising landscape in deep learning. 
+Our experiments show that deeper networks provide higher classification accuracy, with moderate dropout helping to reduce overfitting. Shallow wide networks, even with more parameters, perform worse. Unfortunately, due to the limits of time, we were unable to investigate networks deeper than 25 layers. However, both our results and other literature suggest that increasing depth will continue to yield better classification accuracy. In addition, more time was spent exploring different architectures than on fully tuning each architecture. Better hyperparameter tuning, as well as introduction of other forms of regularization such as L2 would likely also yield better classification accuracy.
 
-The TU-Berlin dataset, though is the largest, is still relatively limited. However, some things that we can try next is use other networks to train on the TU- Berlin dataset, such as using VGG to train on sketches or the original architecture of ResNet. Our framework source-code and associated data (pre-trained models) can be accessed at: github.com/krinkels/sketch-recognition
+The TU-Berlin dataset, though is the largest, is still relatively limited. However, some things that we can try next is use other networks to train on the TU- Berlin dataset, such as using VGG to train on sketches or the original architecture of ResNet. Our source code can be accessed at: https://www.github.com/krinkels/sketch-recognition
 
 
-
+{\small
+\bibliographystyle{ieee}
+\bibliography{milestone}
+}
 
 
 \end{document}
